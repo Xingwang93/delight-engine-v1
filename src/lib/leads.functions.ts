@@ -86,9 +86,9 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const supabase = getPublicClient();
     const patch: Record<string, unknown> = { status: data.status };
-    if (data.plan !== undefined) patch.plan = data.plan;
-    if (data.price !== undefined) patch.price = data.price;
-    if (data.lane) patch.lane = data.lane;
+    if (data.plan !== undefined) patch["plan"] = data.plan;
+    if (data.price !== undefined) patch["price"] = data.price;
+    if (data.lane) patch["lane"] = data.lane;
     const { error } = await supabase.from("leads").update(patch).eq("id", data.id);
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
