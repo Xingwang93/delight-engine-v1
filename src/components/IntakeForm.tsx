@@ -74,8 +74,6 @@ export default function IntakeForm() {
           name: name.trim(),
           email: email.trim(),
           phone: phone.trim(),
-          country: country.trim(),
-          instagram: instagram.trim(),
           goal,
           service,
           motivation: motivation.trim(),
