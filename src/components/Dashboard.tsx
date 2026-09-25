@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import { listLeads, updateLeadStatus } from "@/lib/leads.functions";
+import { draftMessage, listLeads, updateLeadStatus } from "@/lib/leads.functions";
 import {
   buildWhatsAppMessage,
   findPlan,
@@ -17,10 +17,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { QrCode, Copy, Check, RefreshCw, Smartphone } from "lucide-react";
+import { QrCode, Copy, Check, RefreshCw, Smartphone, Sparkles } from "lucide-react";
 
 /** Label from the chosen plan if any, otherwise the client's preference. */
 function laneBadge(lead: Lead, planName?: string | null) {
@@ -81,6 +82,8 @@ export default function Dashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [prices, setPrices] = useState<Record<string, string>>({});
   const [plans, setPlans] = useState<Record<string, string>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [drafting, setDrafting] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -101,7 +104,8 @@ export default function Dashboard() {
           : "")
     : "";
   const numericPrice = price ? Number(price) : null;
-  const message = selected ? buildWhatsAppMessage(selected, plan, numericPrice) : "";
+  const templateMessage = selected ? buildWhatsAppMessage(selected, plan, numericPrice) : "";
+  const message = selected ? (drafts[selected.id] ?? templateMessage) : "";
 
   const newCount = leads.filter((l) => l.status === "new").length;
 
@@ -109,6 +113,34 @@ export default function Dashboard() {
     if (!selected) return;
     setPlans((s) => ({ ...s, [selected.id]: p.name }));
     setPrices((s) => ({ ...s, [selected.id]: String(p.price) }));
+  }
+
+  const doDraft = useServerFn(draftMessage);
+
+  async function handleDraftAi() {
+    if (!selected || drafting) return;
+    setDrafting(true);
+    try {
+      const { text } = await doDraft({
+        data: {
+          name: selected.name,
+          goal: selected.goal,
+          service: selected.service,
+          motivation: selected.motivation,
+          objection: selected.objection,
+          commitment: selected.commitment,
+          plan: plan?.name ?? null,
+          price: numericPrice,
+          lane: plan?.lane ?? null,
+        },
+      });
+      setDrafts((s) => ({ ...s, [selected.id]: text }));
+      toast.success("AI draft ready — tweak it or copy as-is");
+    } catch {
+      toast.error("AI drafting failed — the template message is still there");
+    } finally {
+      setDrafting(false);
+    }
   }
 
   async function handleCopy() {
@@ -148,9 +180,9 @@ export default function Dashboard() {
       {/* Top bar */}
       <header className="flex items-center justify-between border-b border-border px-5 py-3.5">
         <div className="flex items-baseline gap-4">
-          <span className="font-display text-2xl uppercase tracking-wide">ASclub <span className="text-primary">OS</span></span>
+          <span className="font-display text-2xl uppercase tracking-wide">Pulse<span className="text-primary">Coach</span></span>
           <span className="hidden font-script text-xl text-muted-foreground sm:inline">
-            Sin excusas, sin dramas
+            No excuses. No dramas.
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -296,13 +328,33 @@ export default function Dashboard() {
 
                   {/* Message preview */}
                   <div className="rounded-xl border border-border bg-card p-5">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <span className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
                         Drafted WhatsApp message
+                        <Smartphone className="size-4" />
                       </span>
-                      <Smartphone className="size-4 text-muted-foreground" />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleDraftAi}
+                        disabled={drafting}
+                        className="gap-2"
+                      >
+                        <Sparkles className={"size-3.5 " + (drafting ? "animate-pulse" : "")} />
+                        {drafting ? "Drafting…" : "Draft with AI"}
+                      </Button>
                     </div>
-                    <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">{message}</pre>
+                    <Textarea
+                      value={message}
+                      onChange={(e) =>
+                        selected && setDrafts((s) => ({ ...s, [selected.id]: e.target.value }))
+                      }
+                      rows={12}
+                      className="font-sans text-sm leading-relaxed text-foreground/90"
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Template updates instantly as you pick a plan — or let AI personalize it to this lead's answers.
+                    </p>
                   </div>
 
                   {/* Actions */}
