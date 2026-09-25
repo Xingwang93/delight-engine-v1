@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ASclub OS" },
+      { title: "PulseCoach" },
       { name: "description", content: "Lead & quote router for a solo fitness coach." },
-      { name: "author", content: "ASclub" },
-      { property: "og:title", content: "ASclub OS" },
+      { name: "author", content: "PulseCoach" },
+      { property: "og:title", content: "PulseCoach" },
       { property: "og:description", content: "Lead & quote router for a solo fitness coach." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
