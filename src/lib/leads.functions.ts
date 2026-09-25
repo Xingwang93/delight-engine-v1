@@ -25,7 +25,7 @@ function getPublicClient() {
 }
 
 export const listLeads = createServerFn({ method: "GET" }).handler(async () => {
-  const supabase = getPublicClient();
+  const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabase
     .from("leads")
     .select(
@@ -33,8 +33,8 @@ export const listLeads = createServerFn({ method: "GET" }).handler(async () => {
     )
     .order("created_at", { ascending: true })
     .order("id", { ascending: true });
-  if (error) throw new Error("Could not load leads");
-  return data ?? [];
+  if (error) { console.error("listLeads", error); throw new Error("Could not load leads"); }
+  return (data ?? []) as unknown as import("@/lib/leads").Lead[];
 });
 
 const submitLeadInput = z.object({
@@ -84,12 +84,12 @@ const updateLeadStatusInput = z.object({
 export const updateLeadStatus = createServerFn({ method: "POST" })
   .inputValidator((input) => updateLeadStatusInput.parse(input))
   .handler(async ({ data }) => {
-    const supabase = getPublicClient();
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
     const patch: Record<string, unknown> = { status: data.status };
     if (data.plan !== undefined) patch["plan"] = data.plan;
     if (data.price !== undefined) patch["price"] = data.price;
     if (data.lane) patch["lane"] = data.lane;
-    const { error } = await supabase.from("leads").update(patch).eq("id", data.id);
+    const { error } = await supabase.from("leads").update(patch as never).eq("id", data.id);
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
 });
@@ -97,7 +97,7 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
 export const deleteLead = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
-    const supabase = getPublicClient();
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
     const { error } = await supabase.from("leads").delete().eq("id", data.id);
     if (error) throw new Error("Could not delete the lead");
     return { ok: true };
