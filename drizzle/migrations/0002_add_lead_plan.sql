@@ -1,0 +1,2 @@
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS plan text;
+UPDATE public.leads SET service = CASE WHEN lane = 'online' THEN 'Online Coaching' ELSE 'In-Person at ASclub Gym' END WHERE source = 'demo';
