@@ -4,7 +4,7 @@ import Dashboard from "@/components/Dashboard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PulseCoach — Lead & Quote Router" },
+      { title: "PulseCoach" },
       {
         name: "description",
         content:
