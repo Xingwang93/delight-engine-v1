@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import { draftMessage, listLeads, updateLeadStatus } from "@/lib/leads.functions";
+import { draftMessage, listLeads, updateLeadStatus, deleteLead } from "@/lib/leads.functions";
 import {
   buildWhatsAppMessage,
   findPlan,
@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { QrCode, Copy, Check, RefreshCw, Smartphone, Sparkles } from "lucide-react";
+import { QrCode, Copy, Check, RefreshCw, Smartphone, Sparkles, Trash2 } from "lucide-react";
 
 /** Label from the chosen plan if any, otherwise the client's preference. */
 function laneBadge(lead: Lead, planName?: string | null) {
@@ -170,6 +170,19 @@ export default function Dashboard() {
       refetch();
     } catch {
       toast.error("Could not update the lead");
+    }
+  }
+
+  async function handleDelete() {
+    if (!selected) return;
+    const name = selected.name;
+    try {
+      await deleteLead({ data: { id: selected.id } });
+      setSelectedId(null);
+      toast.success(`${name} deleted`);
+      refetch();
+    } catch {
+      toast.error("Could not delete the lead");
     }
   }
 
@@ -370,6 +383,15 @@ export default function Dashboard() {
                       disabled={selected.status === "pending"}
                     >
                       {selected.status === "pending" ? "Already contacted" : "Mark as Contacted"}
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={handleDelete}
+                      className="gap-2 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                      Delete
                     </Button>
                   </div>
                 </div>
