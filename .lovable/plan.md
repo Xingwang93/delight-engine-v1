@@ -1,8 +1,14 @@
-# ASclub Service Router — Hackathon MVP
+# ASclub Service Router — Hackathon Demo MVP
 
 ## What we're building
 
-A single-page "One-Tap Quote" dashboard for Ariana (solo fitness coach, Palma de Mallorca) that turns incoming leads into ready-to-send Spanish WhatsApp quotes. Mock data only — no backend, no real Elementor/Stripe integration. Built to demo by 4:00 PM.
+A single-page "One-Tap Quote" dashboard demo. The story: Ariana, a solo fitness coach in Palma de Mallorca, drowns in manual WhatsApp quoting — this tool turns incoming leads into ready-to-send quotes. Mock data only — no backend, no real Elementor/Stripe integration. Built to demo on stage.
+
+## Audience & language
+
+- **UI in English** — the hackathon audience is English-speaking, so all labels, buttons, and headings are English.
+- **The drafted client message stays in Spanish** — that's the authentic detail: Ariana's clients are Spanish-speaking, and the live-generated Spanish WhatsApp message (with "SIN EXCUSAS SIN DRAMAS") is the demo's wow moment.
+- Ariana remains the persona, framed generically as "a solo fitness coach" so the audience can map it to any solo professional.
 
 ## Screen layout (one route: /)
 
@@ -24,7 +30,7 @@ A single-page "One-Tap Quote" dashboard for Ariana (solo fitness coach, Palma de
 │ └────────────┘ │  │  150€ — paga aquí: [Stripe] │    │
 │   ...scroll    │  └─────────────────────────────┘    │
 │                │                                     │
-│                │  [📋 Copy to WhatsApp] [✓ Contacted]│
+│                │  [Copy to WhatsApp] [Mark Contacted]│
 └────────────────┴─────────────────────────────────────┘
 ```
 
@@ -34,18 +40,17 @@ A single-page "One-Tap Quote" dashboard for Ariana (solo fitness coach, Palma de
 2. **Lead workspace (right pane)** — summary of the selected lead plus a price input.
 3. **Live message engine** — typing a price instantly re-renders the drafted Spanish WhatsApp message: greeting, goal reference, slogan "SIN EXCUSAS SIN DRAMAS", price, and payment instructions.
 4. **Two-lane routing** — Online leads get a Stripe payment-link placeholder in the message; Gym leads get pay-in-person-at-the-facility instructions.
-5. **Actions** — "Copy to WhatsApp" (copies message to clipboard, with toast confirmation) and "Mark as Contacted" (flips the card New → Pending, persisted in component state).
+5. **Actions** — "Copy to WhatsApp" (copies message to clipboard, with toast confirmation) and "Mark as Contacted" (flips the card New → Pending, in component state).
 6. **States** — empty state when no lead selected; mobile collapses to list → detail navigation.
 
 ## Design
 
 - Black / white / gold palette, dark-first "ASclub OS" bespoke-tool feel — premium, energetic, zero clutter (her stated rejection of off-the-shelf software).
 - Sharp typography: a condensed display font for the brand, clean sans for UI. Gold reserved for accents, prices, and the slogan.
-- Spanish UI copy throughout.
 
 ## Technical notes
 
 - Single route `src/routes/index.tsx` (replaces the placeholder); components under `src/components/`.
-- Mock leads as a typed array in `src/lib/mock-leads.ts`; message template as a pure function `buildWhatsAppMessage(lead, price)` — easy to unit-check and to swap for real data later.
-- No Lovable Cloud / database needed for the demo; state lives in React. Post-hackathon V2 items (AI plans, Airtable, Qclinicas, video) stay out of scope.
-- Custom head() metadata: "ASclub OS — Router de Leads y Presupuestos".
+- Mock leads as a typed array in `src/lib/mock-leads.ts`; message template as a pure function `buildWhatsAppMessage(lead, price)` — easy to check and to swap for real data later.
+- No backend/database needed for the demo; state lives in React. Post-hackathon V2 items (AI plans, Airtable, Qclinicas, video) stay out of scope.
+- Custom head() metadata: "ASclub OS — Lead & Quote Router".
