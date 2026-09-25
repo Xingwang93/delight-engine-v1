@@ -149,8 +149,8 @@ export default function Dashboard() {
       <header className="flex items-center justify-between border-b border-border px-5 py-3.5">
         <div className="flex items-baseline gap-4">
           <span className="font-display text-2xl uppercase tracking-wide">ASclub <span className="text-primary">OS</span></span>
-          <span className="hidden text-[11px] uppercase tracking-[0.25em] text-muted-foreground sm:inline">
-            Sin Excusas Sin Dramas
+          <span className="hidden font-script text-xl text-muted-foreground sm:inline">
+            Sin excusas, sin dramas
           </span>
         </div>
         <div className="flex items-center gap-3">
