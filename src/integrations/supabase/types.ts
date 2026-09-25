@@ -16,35 +16,56 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          commitment: string | null
+          country: string | null
           created_at: string
+          email: string | null
           goal: string
           id: string
+          instagram: string | null
           lane: string
           motivation: string
           name: string
+          objection: string | null
+          phone: string | null
           price: number | null
+          service: string | null
           source: string
           status: string
         }
         Insert: {
+          commitment?: string | null
+          country?: string | null
           created_at?: string
+          email?: string | null
           goal: string
           id?: string
+          instagram?: string | null
           lane: string
           motivation: string
           name: string
+          objection?: string | null
+          phone?: string | null
           price?: number | null
+          service?: string | null
           source?: string
           status?: string
         }
         Update: {
+          commitment?: string | null
+          country?: string | null
           created_at?: string
+          email?: string | null
           goal?: string
           id?: string
+          instagram?: string | null
           lane?: string
           motivation?: string
           name?: string
+          objection?: string | null
+          phone?: string | null
           price?: number | null
+          service?: string | null
           source?: string
           status?: string
         }
