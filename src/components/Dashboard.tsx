@@ -4,7 +4,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { listLeads, updateLeadStatus } from "@/lib/leads.functions";
-import { buildWhatsAppMessage, suggestedPrice, type Lane, type Lead, type LeadStatus } from "@/lib/leads";
+import {
+  buildWhatsAppMessage,
+  findPlan,
+  formatLabel,
+  PLANS,
+  suggestedPlan,
+  type Lead,
+  type LeadStatus,
+  type Plan,
+} from "@/lib/leads";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +22,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { QRCodeSVG } from "qrcode.react";
 import { QrCode, Copy, Check, RefreshCw, Smartphone } from "lucide-react";
 
-function laneBadge(lane: Lane) {
-  return lane === "online" ? (
+/** Label from the chosen plan if any, otherwise the client's preference. */
+function laneBadge(lead: Lead, planName?: string | null) {
+  const p = findPlan(planName ?? lead.plan);
+  const label = p ? (p.lane === "online" ? "Online" : "At gym") : formatLabel(lead.service);
+  if (!label)
+    return <Badge variant="outline" className="text-muted-foreground">TO RECOMMEND</Badge>;
+  return label === "Online" ? (
     <Badge className="border-transparent bg-accent text-accent-foreground">ONLINE</Badge>
   ) : (
-    <Badge className="border-transparent bg-secondary text-secondary-foreground">GYM</Badge>
+    <Badge className="border-transparent bg-secondary text-secondary-foreground">AT GYM</Badge>
   );
 }
 
@@ -66,6 +80,7 @@ export default function Dashboard() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [prices, setPrices] = useState<Record<string, string>>({});
+  const [plans, setPlans] = useState<Record<string, string>>({});
   const [qrOpen, setQrOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -74,11 +89,27 @@ export default function Dashboard() {
     [leads, selectedId],
   );
 
-  const price = selected ? prices[selected.id] ?? (selected.price != null ? String(selected.price) : "") : "";
+  const plan = selected
+    ? findPlan(plans[selected.id] ?? selected.plan) ?? suggestedPlan(selected.service)
+    : null;
+  const price = selected
+    ? prices[selected.id] ??
+      (selected.price != null && selected.plan && !plans[selected.id]
+        ? String(selected.price)
+        : plan
+          ? String(plan.price)
+          : "")
+    : "";
   const numericPrice = price ? Number(price) : null;
-  const message = selected ? buildWhatsAppMessage(selected, numericPrice) : "";
+  const message = selected ? buildWhatsAppMessage(selected, plan, numericPrice) : "";
 
   const newCount = leads.filter((l) => l.status === "new").length;
+
+  function choosePlan(p: Plan) {
+    if (!selected) return;
+    setPlans((s) => ({ ...s, [selected.id]: p.name }));
+    setPrices((s) => ({ ...s, [selected.id]: String(p.price) }));
+  }
 
   async function handleCopy() {
     try {
@@ -94,7 +125,15 @@ export default function Dashboard() {
   async function handleContacted() {
     if (!selected) return;
     try {
-      await updateLeadStatus({ data: { id: selected.id, status: "pending" } });
+      await updateLeadStatus({
+        data: {
+          id: selected.id,
+          status: "pending",
+          plan: plan?.name ?? null,
+          price: numericPrice,
+          ...(plan ? { lane: plan.lane } : {}),
+        },
+      });
       toast.success(`${selected.name} marked as contacted`);
       refetch();
     } catch {
@@ -176,7 +215,7 @@ export default function Dashboard() {
                     <div>
                       <h1 className="font-display text-3xl uppercase tracking-wide">{selected.name}</h1>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {selected.service && <span>Service: {selected.service} · </span>}
+                        {selected.service && <span>Prefers: {selected.service} · </span>}
                         Goal: {selected.goal}
                       </p>
                       {selected.motivation && (
@@ -197,10 +236,43 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex flex-1 flex-col gap-6 p-6 lg:max-w-2xl">
+                  {/* Plan selector */}
+                  <div>
+                    <span className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      Choose a plan
+                    </span>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {PLANS.map((p) => {
+                        const active = plan?.name === p.name;
+                        return (
+                          <button
+                            key={p.name}
+                            type="button"
+                            onClick={() => choosePlan(p)}
+                            className={
+                              "flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors " +
+                              (active
+                                ? "border-primary bg-secondary text-foreground"
+                                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground")
+                            }
+                          >
+                            <span>
+                              <span className="block font-medium text-foreground">{p.name}</span>
+                              <span className="text-[11px] uppercase tracking-widest">
+                                {p.lane === "online" ? "Online" : "At gym"}
+                              </span>
+                            </span>
+                            <span className="font-display text-lg text-primary">€{p.price}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   {/* Price input */}
                   <div>
                     <label htmlFor="price" className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      Suggested price
+                      Price
                     </label>
                     <div className="relative mt-2">
                       <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-primary">€</span>
@@ -210,7 +282,7 @@ export default function Dashboard() {
                         min={0}
                         inputMode="decimal"
                         value={price}
-                        placeholder={String(suggestedPrice(selected))}
+                        placeholder="Pick a plan"
                         onChange={(e) => {
                           setPrices((p) => ({ ...p, [selected.id]: e.target.value }));
                         }}
@@ -218,7 +290,7 @@ export default function Dashboard() {
                       />
                     </div>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      The message below re-renders instantly as you type.
+                      Fixed plan price — edit for a one-off discount. The message re-renders instantly.
                     </p>
                   </div>
 
