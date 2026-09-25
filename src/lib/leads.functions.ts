@@ -34,7 +34,7 @@ export const listLeads = createServerFn({ method: "GET" }).handler(async () => {
     .order("created_at", { ascending: true })
     .order("id", { ascending: true });
   if (error) throw new Error("Could not load leads");
-  return data ?? [];
+  return (data ?? []) as unknown as import("@/lib/leads").Lead[];
 });
 
 const submitLeadInput = z.object({
@@ -89,7 +89,7 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
     if (data.plan !== undefined) patch["plan"] = data.plan;
     if (data.price !== undefined) patch["price"] = data.price;
     if (data.lane) patch["lane"] = data.lane;
-    const { error } = await supabase.from("leads").update(patch).eq("id", data.id);
+    const { error } = await supabase.from("leads").update(patch as never).eq("id", data.id);
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
 });
