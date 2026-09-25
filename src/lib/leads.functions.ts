@@ -29,7 +29,7 @@ export const listLeads = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabase
     .from("leads")
     .select(
-      "id, name, goal, service, motivation, objection, commitment, lane, status, price, source, created_at",
+      "id, name, goal, service, plan, motivation, objection, commitment, lane, status, price, source, created_at",
     )
     .order("created_at", { ascending: true })
     .order("id", { ascending: true });
@@ -53,7 +53,7 @@ const submitLeadInput = z.object({
 export const submitLead = createServerFn({ method: "POST" })
   .inputValidator((input) => submitLeadInput.parse(input))
   .handler(async ({ data }) => {
-    const { laneFromService } = await import("@/lib/leads");
+    const { laneFromFormat } = await import("@/lib/leads");
     const supabase = getPublicClient();
     const { error } = await supabase.from("leads").insert({
       name: data.name,
@@ -66,7 +66,7 @@ export const submitLead = createServerFn({ method: "POST" })
       phone: data.phone || null,
       country: data.country || null,
       instagram: data.instagram || null,
-      lane: laneFromService(data.service),
+      lane: laneFromFormat(data.service),
       source: "intake",
     });
     if (error) throw new Error("Could not submit your request");
@@ -76,13 +76,20 @@ export const submitLead = createServerFn({ method: "POST" })
 const updateLeadStatusInput = z.object({
   id: z.string().uuid(),
   status: z.enum(["new", "pending"]),
+  plan: z.string().max(120).nullable().optional(),
+  price: z.number().min(0).max(100000).nullable().optional(),
+  lane: z.enum(["gym", "online"]).optional(),
 });
 
 export const updateLeadStatus = createServerFn({ method: "POST" })
   .inputValidator((input) => updateLeadStatusInput.parse(input))
   .handler(async ({ data }) => {
     const supabase = getPublicClient();
-    const { error } = await supabase.from("leads").update({ status: data.status }).eq("id", data.id);
+    const patch: Record<string, unknown> = { status: data.status };
+    if (data.plan !== undefined) patch["plan"] = data.plan;
+    if (data.price !== undefined) patch["price"] = data.price;
+    if (data.lane) patch["lane"] = data.lane;
+    const { error } = await supabase.from("leads").update(patch).eq("id", data.id);
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
   });

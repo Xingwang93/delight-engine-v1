@@ -28,6 +28,7 @@ export type Database = {
           name: string
           objection: string | null
           phone: string | null
+          plan: string | null
           price: number | null
           service: string | null
           source: string
@@ -46,6 +47,7 @@ export type Database = {
           name: string
           objection?: string | null
           phone?: string | null
+          plan?: string | null
           price?: number | null
           service?: string | null
           source?: string
@@ -64,6 +66,7 @@ export type Database = {
           name?: string
           objection?: string | null
           phone?: string | null
+          plan?: string | null
           price?: number | null
           service?: string | null
           source?: string
