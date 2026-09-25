@@ -36,8 +36,6 @@ export default function IntakeForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("");
-  const [instagram, setInstagram] = useState("");
   const [goal, setGoal] = useState<string | null>(null);
   const [service, setService] = useState<string | null>(null);
   const [motivation, setMotivation] = useState("");
@@ -198,14 +196,6 @@ export default function IntakeForm() {
               <div className="flex flex-col gap-2">
                 <Label htmlFor="phone">Phone</Label>
                 <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+34 600 000 000" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="country">Country</Label>
-                <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Spain" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="instagram">Your Instagram @</Label>
-                <Input id="instagram" value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="@username" />
               </div>
             </div>
           )}
