@@ -4,13 +4,13 @@ import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 import { submitLead } from "@/lib/leads.functions";
-import { COMMITMENT_OPTIONS, GOALS, SERVICES } from "@/lib/leads";
+import { COMMITMENT_OPTIONS, GOALS, TRAINING_FORMATS } from "@/lib/leads";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-const STEPS = ["Goal", "Service", "Motivation", "Objection", "Commitment", "Register"] as const;
+const STEPS = ["Goal", "Format", "Motivation", "Objection", "Commitment", "Register"] as const;
 
 function optionButton(selected: boolean, onClick: () => void, title: string, subtitle?: string) {
   return (
@@ -114,7 +114,7 @@ export default function IntakeForm() {
 
   const subtitles: Record<number, string> = {
     0: "What is your goal?",
-    1: "Which service are you interested in?",
+    1: "Where and how do you prefer to train?",
     2: "Why start taking care of yourself now?",
     3: "What's holding you back from taking your first step?",
     4: "Ariana's method is built for people who want to improve their quality of life through training and nutrition. Are you willing to invest in improving your quality of life?",
@@ -155,7 +155,9 @@ export default function IntakeForm() {
 
           {step === 1 && (
             <div className="flex flex-col gap-2.5">
-              {SERVICES.map((s) => optionButton(service === s, () => setService(s), s))}
+              {TRAINING_FORMATS.map((f) =>
+                optionButton(service === f.title, () => setService(f.title), f.title, f.subtitle),
+              )}
             </div>
           )}
 
