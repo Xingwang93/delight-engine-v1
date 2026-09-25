@@ -2,15 +2,16 @@
 
 ## What we're building
 
-A single-page "One-Tap Quote" dashboard demo. The story: Ariana, a solo fitness coach in Palma de Mallorca, drowns in manual WhatsApp quoting — this tool turns incoming leads into ready-to-send quotes. Mock data only — no backend, no real Elementor/Stripe integration. Built to demo on stage.
+A "One-Tap Quote" demo for the hackathon stage. The story: Ariana, a solo fitness coach, drowns in manual WhatsApp quoting — this tool turns incoming leads into ready-to-send quotes. Demo-first: 6–8 preloaded mock leads, plus a **live intake form with a QR code** you can share during the demo so audience members submit real leads that appear on the dashboard.
 
 ## Audience & language
 
-- **UI in English** — the hackathon audience is English-speaking, so all labels, buttons, and headings are English.
-- **The drafted client message stays in Spanish** — that's the authentic detail: Ariana's clients are Spanish-speaking, and the live-generated Spanish WhatsApp message (with "SIN EXCUSAS SIN DRAMAS") is the demo's wow moment.
-- Ariana remains the persona, framed generically as "a solo fitness coach" so the audience can map it to any solo professional.
+- **Everything in English** — UI and the drafted client message are both English, so the whole demo reads for the audience.
+- Ariana remains the persona, framed generically as "a solo fitness coach".
 
-## Screen layout (one route: /)
+## Screens
+
+### 1. Dashboard — `/` (main demo surface)
 
 ```text
 ┌──────────────────────────────────────────────────────┐
@@ -23,34 +24,39 @@ A single-page "One-Tap Quote" dashboard demo. The story: Ariana, a solo fitness 
 │ │ Online·New │ │  │ Suggested price: [ 150 ] €  │    │
 │ ├────────────┤ │  └─────────────────────────────┘    │
 │ │ Jorge P.   │ │                                     │
-│ │ Gym·Pending│ │  Drafted WhatsApp message (ES):     │
+│ │ Gym·Pending│ │  Drafted WhatsApp message (EN):     │
 │ ├────────────┤ │  ┌─────────────────────────────┐    │
-│ │ Lucía R.   │ │  │ "¡Hola María! SIN EXCUSAS   │    │
-│ │ Online·New │ │  │  SIN DRAMAS... tu plan:     │    │
-│ └────────────┘ │  │  150€ — paga aquí: [Stripe] │    │
+│ │ Lucía R.   │ │  │ "Hi María! NO EXCUSES, NO   │    │
+│ │ Online·New │ │  │  DRAMA... your plan:        │    │
+│ └────────────┘ │  │  €150 — pay here: [Stripe]  │    │
 │   ...scroll    │  └─────────────────────────────┘    │
 │                │                                     │
-│                │  [Copy to WhatsApp] [Mark Contacted]│
+│ [Show intake   │  [Copy to WhatsApp] [Mark Contacted]│
+│   QR]          │                                     │
 └────────────────┴─────────────────────────────────────┘
 ```
 
-## Features
-
-1. **Lead list (left pane)** — 6–8 realistic mock leads (name, goal, motivation, lane). Cards show lane badge (Gym / Online) and status (New / Pending). Click to select; scrollable.
+1. **Lead list (left pane)** — mock leads plus live form submissions, mixed in one list. Cards show lane badge (Gym / Online) and status (New / Pending). Click to select; scrollable; refresh button / light polling picks up new submissions.
 2. **Lead workspace (right pane)** — summary of the selected lead plus a price input.
-3. **Live message engine** — typing a price instantly re-renders the drafted Spanish WhatsApp message: greeting, goal reference, slogan "SIN EXCUSAS SIN DRAMAS", price, and payment instructions.
+3. **Live message engine** — typing a price instantly re-renders the drafted English WhatsApp message: greeting, goal reference, "SIN EXCUSAS SIN DRAMAS" as the brand line, price, and payment instructions.
 4. **Two-lane routing** — Online leads get a Stripe payment-link placeholder in the message; Gym leads get pay-in-person-at-the-facility instructions.
-5. **Actions** — "Copy to WhatsApp" (copies message to clipboard, with toast confirmation) and "Mark as Contacted" (flips the card New → Pending, in component state).
-6. **States** — empty state when no lead selected; mobile collapses to list → detail navigation.
+5. **Actions** — "Copy to WhatsApp" (clipboard + toast) and "Mark as Contacted" (flips New → Pending).
+6. **QR code button** — opens a modal with a QR code linking to the intake form; scan → submit → the lead shows up in the dashboard for the demo.
+
+### 2. Intake form — `/intake` (public route)
+
+Clean branded form (same black/white/gold system): name, goal, motivation, preferred lane (Gym / Online). Submits to the cloud and lands in the dashboard as a New lead. Success state tells the lead Ariana will message them.
 
 ## Design
 
-- Black / white / gold palette, dark-first "ASclub OS" bespoke-tool feel — premium, energetic, zero clutter (her stated rejection of off-the-shelf software).
-- Sharp typography: a condensed display font for the brand, clean sans for UI. Gold reserved for accents, prices, and the slogan.
+- Black / white / gold palette, dark-first "ASclub OS" bespoke-tool feel — premium, energetic, zero clutter.
+- Condensed display font for the brand, clean sans for UI. Gold reserved for accents, prices, and the brand line.
 
 ## Technical notes
 
-- Single route `src/routes/index.tsx` (replaces the placeholder); components under `src/components/`.
-- Mock leads as a typed array in `src/lib/mock-leads.ts`; message template as a pure function `buildWhatsAppMessage(lead, price)` — easy to check and to swap for real data later.
-- No backend/database needed for the demo; state lives in React. Post-hackathon V2 items (AI plans, Airtable, Qclinicas, video) stay out of scope.
-- Custom head() metadata: "ASclub OS — Lead & Quote Router".
+- **Lovable Cloud** (enable during build) backs the demo: a `leads` table (name, goal, motivation, lane, status, price, source) with RLS — public insert for the intake form, owner-only read for the dashboard. Dashboard reads via a server function with light polling; mock leads are seeded in the migration so the demo never shows an empty board.
+- Routes: `src/routes/index.tsx` (dashboard), `src/routes/intake.tsx` (public form). Components under `src/components/`.
+- Message template as a pure function `buildWhatsAppMessage(lead, price)`; mock leads as a typed array in `src/lib/mock-leads.ts`.
+- QR code generated client-side (a small QR library) pointing at the hosted intake URL; the demo's preview URL is used during the presentation.
+- V2 items (AI plans, Airtable, Qclinicas, video) stay out of scope.
+- Custom head() metadata on both routes: "ASclub OS — Lead & Quote Router" and "ASclub — Start Your Assessment".
