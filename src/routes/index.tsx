@@ -4,13 +4,13 @@ import Dashboard from "@/components/Dashboard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PulseCoach — Lead & Quote Router" },
+      { title: "PulseCoach" },
       {
         name: "description",
         content:
           "One-tap quotes for a solo fitness coach: capture leads, pick a plan, and dispatch AI-drafted WhatsApp messages.",
       },
-      { property: "og:title", content: "PulseCoach — Lead & Quote Router" },
+      { property: "og:title", content: "PulseCoach" },
       {
         property: "og:description",
         content: "One-tap quotes for a solo fitness coach: capture leads, pick a plan, and dispatch AI-drafted WhatsApp messages.",
