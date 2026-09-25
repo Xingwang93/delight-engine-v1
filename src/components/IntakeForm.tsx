@@ -104,9 +104,9 @@ export default function IntakeForm() {
             You're in, {name.split(" ")[0]}.
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Ariana is reviewing your intake and will message you shortly with your quote. No excuses, no dramas.
+            Your coach is reviewing your intake and will message you shortly with your quote. No excuses, no dramas.
           </p>
-          <p className="mt-6 font-script text-3xl text-primary">Sin excusas, sin dramas</p>
+          <p className="mt-6 font-script text-3xl text-primary">No excuses. No dramas.</p>
         </div>
       </div>
     );
@@ -117,16 +117,16 @@ export default function IntakeForm() {
     1: "Where and how do you prefer to train?",
     2: "Why start taking care of yourself now?",
     3: "What's holding you back from taking your first step?",
-    4: "Ariana's method is built for people who want to improve their quality of life through training and nutrition. Are you willing to invest in improving your quality of life?",
-    5: "Register — Ariana will send your quote by WhatsApp.",
+    4: "This method is built for people who want to improve their quality of life through training and nutrition. Are you willing to invest in improving your quality of life?",
+    5: "Register — your coach will send your quote by WhatsApp.",
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-background px-4 py-10 text-foreground">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <h1 className="font-display text-4xl uppercase tracking-wide">ASclub</h1>
-          <p className="mt-1 font-script text-2xl text-primary">Sin excusas, sin dramas</p>
+          <h1 className="font-display text-4xl uppercase tracking-wide">PulseCoach</h1>
+          <p className="mt-1 font-script text-2xl text-primary">No excuses. No dramas.</p>
         </div>
 
         <div className="mb-4 flex items-center justify-center gap-1.5">
