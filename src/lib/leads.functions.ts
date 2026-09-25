@@ -92,6 +92,15 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
     const { error } = await supabase.from("leads").update(patch).eq("id", data.id);
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
+});
+
+export const deleteLead = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const supabase = getPublicClient();
+    const { error } = await supabase.from("leads").delete().eq("id", data.id);
+    if (error) throw new Error("Could not delete the lead");
+    return { ok: true };
   });
 
 const draftMessageInput = z.object({
