@@ -202,12 +202,7 @@ export default function Dashboard() {
                         value={price}
                         placeholder={String(suggestedPrice(selected))}
                         onChange={(e) => {
-                          const v = e.target.value;
-                          setPrices((p) => ({ ...p, [selected.id]: v }));
-                          if (!Number.isNaN(Number(v)) && Number(v) > 0) {
-                            // Persist the price on the row so the quote is consistent
-                            selected.price = Number(v);
-                          }
+                          setPrices((p) => ({ ...p, [selected.id]: e.target.value }));
                         }}
                         className="h-14 bg-card pl-10 font-display text-2xl tracking-wide"
                       />
