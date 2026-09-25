@@ -33,7 +33,7 @@ export const listLeads = createServerFn({ method: "GET" }).handler(async () => {
     )
     .order("created_at", { ascending: true })
     .order("id", { ascending: true });
-  if (error) throw new Error("Could not load leads");
+  if (error) { console.error("listLeads", error); throw new Error("Could not load leads"); }
   return (data ?? []) as unknown as import("@/lib/leads").Lead[];
 });
 
