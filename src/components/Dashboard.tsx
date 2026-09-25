@@ -176,8 +176,18 @@ export default function Dashboard() {
                     <div>
                       <h1 className="font-display text-3xl uppercase tracking-wide">{selected.name}</h1>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Goal: {selected.goal} · Motivation: {selected.motivation}
+                        {selected.service && <span>Service: {selected.service} · </span>}
+                        Goal: {selected.goal}
                       </p>
+                      {selected.motivation && (
+                        <p className="mt-1 max-w-xl text-sm italic text-muted-foreground">"{selected.motivation}"</p>
+                      )}
+                      {selected.objection && (
+                        <p className="mt-1 max-w-xl text-xs text-muted-foreground/80">
+                          Holding back: {selected.objection}
+                          {selected.commitment ? ` · Commitment: ${selected.commitment}` : ""}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {laneBadge(selected.lane)}
