@@ -93,3 +93,55 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not update the lead");
     return { ok: true };
   });
+
+const draftMessageInput = z.object({
+  name: z.string().min(1).max(80),
+  goal: z.string().max(120),
+  service: z.string().max(120).nullable(),
+  motivation: z.string().max(500),
+  objection: z.string().max(500).nullable(),
+  commitment: z.string().max(120).nullable(),
+  plan: z.string().max(120).nullable(),
+  price: z.number().min(0).max(100000).nullable(),
+  lane: z.enum(["gym", "online"]).nullable(),
+});
+
+/** AI-drafted, personalized WhatsApp closing message. Throws on failure — the UI falls back to the template. */
+export const draftMessage = createServerFn({ method: "POST" })
+  .inputValidator((input) => draftMessageInput.parse(input))
+  .handler(async ({ data }) => {
+    const { generateText } = await import("@/lib/ai.server");
+    const firstName = data.name.split(" ")[0];
+    const payment =
+      data.lane === "online"
+        ? "Tell them you'll send the payment details in your next message."
+        : "Tell them the first payment is made in person at the gym, brought to their first session.";
+
+    const text = await generateText([
+      {
+        role: "system",
+        content:
+          "You are the copywriter for PulseCoach, a solo fitness coach's business. " +
+          "Write a short, warm, energetic WhatsApp closing message in English. " +
+          "Brand voice: direct, motivating, zero fluff. Include the exact line \"NO EXCUSES. NO DRAMAS. 💪\" once. " +
+          "Personalize to the lead's stated motivation and gently answer their objection. " +
+          "Quote the chosen plan and price exactly as given. End with the signature \"— Your PulseCoach\". " +
+          "Keep it under 120 words. Output only the message text, no commentary.",
+      },
+      {
+        role: "user",
+        content: [
+          `Lead first name: ${firstName}`,
+          `Goal: ${data.goal}`,
+          `Training preference: ${data.service ?? "undecided"}`,
+          `Motivation: ${data.motivation}`,
+          `Objection: ${data.objection ?? "none stated"}`,
+          `Commitment: ${data.commitment ?? "unknown"}`,
+          `Chosen plan: ${data.plan ?? "not chosen"}`,
+          `Price: ${data.price != null ? `€${data.price}` : "not set"}`,
+          `Payment instruction: ${payment}`,
+        ].join("\n"),
+      },
+    ]);
+    return { text };
+  });
