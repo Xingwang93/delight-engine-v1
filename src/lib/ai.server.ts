@@ -34,7 +34,24 @@ export async function generateText(system: string, prompt: string): Promise<stri
     },
   });
 
-  const text = (await result.text).trim();
-  if (!text) throw new Error("AI returned an empty draft");
-  return text;
+  // Consume the full stream manually so stream errors surface with their real
+  // cause instead of a bare "No output generated" crash.
+  let text = "";
+  let streamError: string | null = null;
+  try {
+    for await (const part of result.fullStream) {
+      if (part.type === "text-delta") text += part.text;
+      else if (part.type === "error") {
+        streamError =
+          part.error instanceof Error ? part.error.message : String(part.error);
+      }
+    }
+  } catch (err) {
+    streamError = err instanceof Error ? err.message : String(err);
+  }
+
+  if (streamError) throw new Error(`AI stream failed: ${streamError}`);
+  const finalText = text.trim();
+  if (!finalText) throw new Error("AI returned an empty draft");
+  return finalText;
 }
