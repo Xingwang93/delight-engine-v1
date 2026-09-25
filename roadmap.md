@@ -9,3 +9,5 @@
 - [x] Re-run end-to-end Playwright verification (dashboard, QR, funnel submit, mark contacted — all pass)
 - [x] Rebrand to PulseCoach (no ASclub/Ariana), English tagline
 - [x] AI-drafted WhatsApp message via Lovable AI Gateway, editable, template fallback
+- [x] Trim leads to 3 samples + delete button (DB grant/policy + UI)
+- [ ] Final pre-demo checkup: E2E dashboard, delete, intake, AI draft, security scan
