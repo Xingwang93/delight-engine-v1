@@ -66,7 +66,7 @@ function LeadRow({ lead, active, onClick }: { lead: Lead; active: boolean; onCli
       <div className="mt-1.5 flex items-center gap-2">
         <span className="truncate text-xs text-muted-foreground">{lead.goal}</span>
       </div>
-      <div className="mt-2">{laneBadge(lead.lane)}</div>
+      <div className="mt-2">{laneBadge(lead)}</div>
     </button>
   );
 }
@@ -229,7 +229,7 @@ export default function Dashboard() {
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-2">
-                      {laneBadge(selected.lane)}
+                      {laneBadge(selected, plan?.name)}
                       {statusDot(selected.status)}
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export default function Dashboard() {
                   <div className="rounded-xl border border-border bg-card p-5">
                     <div className="mb-3 flex items-center justify-between">
                       <span className="font-display text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                        Drafted WhatsApp message · English
+                        Drafted WhatsApp message
                       </span>
                       <Smartphone className="size-4 text-muted-foreground" />
                     </div>
