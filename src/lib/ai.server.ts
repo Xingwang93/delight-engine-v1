@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { streamText, type ModelMessage } from "ai";
+import { streamText } from "ai";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const MODEL = "openai/gpt-6-astra";
@@ -9,7 +9,7 @@ const MODEL = "openai/gpt-6-astra";
  * Streams the call and returns the final text. Throws on failure —
  * callers fall back to the template message.
  */
-export async function generateText(messages: ModelMessage[]): Promise<string> {
+export async function generateText(system: string, prompt: string): Promise<string> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("AI gateway key not configured");
 
@@ -21,7 +21,8 @@ export async function generateText(messages: ModelMessage[]): Promise<string> {
 
   const result = streamText({
     model: provider.responses(MODEL),
-    messages,
+    system,
+    prompt,
     providerOptions: {
       openai: {
         store: false,

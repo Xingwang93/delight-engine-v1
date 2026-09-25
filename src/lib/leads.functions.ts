@@ -117,31 +117,24 @@ export const draftMessage = createServerFn({ method: "POST" })
         ? "Tell them you'll send the payment details in your next message."
         : "Tell them the first payment is made in person at the gym, brought to their first session.";
 
-    const text = await generateText([
-      {
-        role: "system",
-        content:
-          "You are the copywriter for PulseCoach, a solo fitness coach's business. " +
-          "Write a short, warm, energetic WhatsApp closing message in English. " +
-          "Brand voice: direct, motivating, zero fluff. Include the exact line \"NO EXCUSES. NO DRAMAS. 💪\" once. " +
-          "Personalize to the lead's stated motivation and gently answer their objection. " +
-          "Quote the chosen plan and price exactly as given. End with the signature \"— Your PulseCoach\". " +
-          "Keep it under 120 words. Output only the message text, no commentary.",
-      },
-      {
-        role: "user",
-        content: [
-          `Lead first name: ${firstName}`,
-          `Goal: ${data.goal}`,
-          `Training preference: ${data.service ?? "undecided"}`,
-          `Motivation: ${data.motivation}`,
-          `Objection: ${data.objection ?? "none stated"}`,
-          `Commitment: ${data.commitment ?? "unknown"}`,
-          `Chosen plan: ${data.plan ?? "not chosen"}`,
-          `Price: ${data.price != null ? `€${data.price}` : "not set"}`,
-          `Payment instruction: ${payment}`,
-        ].join("\n"),
-      },
-    ]);
+    const text = await generateText(
+      "You are the copywriter for PulseCoach, a solo fitness coach's business. " +
+        "Write a short, warm, energetic WhatsApp closing message in English. " +
+        "Brand voice: direct, motivating, zero fluff. Include the exact line \"NO EXCUSES. NO DRAMAS. 💪\" once. " +
+        "Personalize to the lead's stated motivation and gently answer their objection. " +
+        "Quote the chosen plan and price exactly as given. End with the signature \"— Your PulseCoach\". " +
+        "Keep it under 120 words. Output only the message text, no commentary.",
+      [
+        `Lead first name: ${firstName}`,
+        `Goal: ${data.goal}`,
+        `Training preference: ${data.service ?? "undecided"}`,
+        `Motivation: ${data.motivation}`,
+        `Objection: ${data.objection ?? "none stated"}`,
+        `Commitment: ${data.commitment ?? "unknown"}`,
+        `Chosen plan: ${data.plan ?? "not chosen"}`,
+        `Price: ${data.price != null ? `€${data.price}` : "not set"}`,
+        `Payment instruction: ${payment}`,
+      ].join("\n"),
+    );
     return { text };
   });
