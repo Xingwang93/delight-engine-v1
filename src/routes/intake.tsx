@@ -9,7 +9,7 @@ export const Route = createFileRoute("/intake")({
         name: "description",
         content: "Tell your coach your goal and motivation. You'll get a personal quote by WhatsApp.",
       },
-      { property: "og:title", content: "PulseCoach — Start Your Assessment" },
+      { property: "og:title", content: "PulseCoach" },
       {
         property: "og:description",
         content: "Tell your coach your goal and motivation. You'll get a personal quote by WhatsApp.",

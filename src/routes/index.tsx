@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
         content:
           "One-tap quotes for a solo fitness coach: capture leads, pick a plan, and dispatch AI-drafted WhatsApp messages.",
       },
-      { property: "og:title", content: "PulseCoach — Lead & Quote Router" },
+      { property: "og:title", content: "PulseCoach" },
       {
         property: "og:description",
         content: "One-tap quotes for a solo fitness coach: capture leads, pick a plan, and dispatch AI-drafted WhatsApp messages.",
