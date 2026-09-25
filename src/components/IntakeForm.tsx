@@ -106,7 +106,7 @@ export default function IntakeForm() {
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Ariana is reviewing your intake and will message you shortly with your quote. No excuses, no dramas.
           </p>
-          <p className="mt-6 font-display text-sm uppercase tracking-[0.25em] text-primary">Sin Excusas Sin Dramas</p>
+          <p className="mt-6 font-script text-3xl text-primary">Sin excusas, sin dramas</p>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function IntakeForm() {
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <h1 className="font-display text-4xl uppercase tracking-wide">ASclub</h1>
-          <p className="mt-2 text-[11px] uppercase tracking-[0.3em] text-primary">Sin Excusas Sin Dramas</p>
+          <p className="mt-1 font-script text-2xl text-primary">Sin excusas, sin dramas</p>
         </div>
 
         <div className="mb-4 flex items-center justify-center gap-1.5">
